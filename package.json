@@ -1,0 +1,11 @@
+{
+  "name": "insomnia-plugin-load-test-timing",
+  "version": "1.0.0",
+  "main": "load-test-timing.js",
+  "insomnia": {
+    "name": "load-test-timing",
+    "description": "Runs requests, given number of times and produces timing results"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
