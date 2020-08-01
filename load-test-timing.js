@@ -33,39 +33,39 @@ const endHtml = `
 
 module.exports.requestGroupActions = [
   {
-    label: 'Load Test',
+    label: "Load Test",
     action: async (context, data) => {
       let numIterations, delayBetweenRequests, runInParallel;
 
       try {
         const numIterationsPrompt = await context.app.prompt(
-          'How many iterations? (1/3)',
+          "How many iterations? (1/3)",
           {
-            label: '# Iterations',
-            defaultValue: '10',
+            label: "# Iterations",
+            defaultValue: "10",
             cancelable: true,
-            submitName: 'Next'
+            submitName: "Next"
           }
         );
 
         numIterations = parseInt(numIterationsPrompt);
 
         const delayBetweenRequestsPrompt = await context.app.prompt(
-          'Second delay between requests? (2/3)',
+          "Second delay between requests? (2/3)",
           {
-            label: '# Seconds',
-            defaultValue: '1',
+            label: "# Seconds",
+            defaultValue: "1",
             cancelable: true,
-            submitName: 'Next'
+            submitName: "Next"
           }
         );
 
         delayBetweenRequests = parseInt(delayBetweenRequestsPrompt);
 
         const bStr = (
-          await context.app.prompt('Run all requests in parallel? (3/3)', {
-            label: 'Run in parallel (Y/N)',
-            defaultValue: 'N',
+          await context.app.prompt("Run all requests in parallel? (3/3)", {
+            label: "Run in parallel (Y/N)",
+            defaultValue: "N",
             cancelable: true
           })
         )
@@ -73,10 +73,10 @@ module.exports.requestGroupActions = [
           .trim();
 
         runInParallel =
-          bStr === 'y' || bStr === 'yes' || bStr === 'true' || bStr === '1';
+          bStr === "y" || bStr === "yes" || bStr === "true" || bStr === "1";
       } catch (err) {
-        if (!err.message || !err.message.endsWith('cancelled')) {
-          context.app.alert('Unknown Error Occurred', err.message || '?');
+        if (!err.message || !err.message.endsWith("cancelled")) {
+          context.app.alert("Unknown Error Occurred", err.message || "?");
           console.log(err);
         }
 
@@ -90,7 +90,7 @@ module.exports.requestGroupActions = [
       const header = `
       <header>
         <b># Iterations:</b> [${numIterations}] <b>Delay between requests:</b> [${delayBetweenRequests}s] <b>Run:</b> 
-        [${runInParallel ? 'in Parallel' : 'Serially'}]
+        [${runInParallel ? "in Parallel" : "Serially"}]
       </header>`;
 
       try {
@@ -102,10 +102,10 @@ module.exports.requestGroupActions = [
           };
         });
 
-        const recorder = responses => {
+        const recorder = (responses, j) => {
           responses.forEach((response, i) => {
-            if (response.statusCode.toString().startsWith('2')) {
-              const result = results[i];
+            if (response.statusCode.toString().startsWith("2")) {
+              const result = results[j || i];
               result.successes++;
               result.total += response.elapsedTime;
             }
@@ -119,13 +119,13 @@ module.exports.requestGroupActions = [
         const execute = () => {
           return new Promise(resolve => {
             const runIt = async currentIteration => {
-              console.log('Run # ' + (currentIteration + 1));
+              console.log("Run # " + (currentIteration + 1));
 
               if (runInParallel) {
                 recorder(await sendRequests(requests));
               } else {
                 for (let j = 0; j < requests.length; j++) {
-                  recorder(await sendRequests([requests[j]]));
+                  recorder(await sendRequests([requests[j]]), j);
                 }
               }
 
@@ -151,12 +151,12 @@ module.exports.requestGroupActions = [
           const result = results[i];
           const avg = result.total / result.successes;
 
-          let color = '';
+          let color = "";
 
           if (result.successes === numIterations) {
-            color = 'limegreen';
+            color = "limegreen";
           } else {
-            color = 'red';
+            color = "red";
           }
 
           rows.push(
@@ -170,11 +170,11 @@ module.exports.requestGroupActions = [
         });
 
         const html =
-          startHtml + header + startTableHtml + rows.join('') + endHtml;
+          startHtml + header + startTableHtml + rows.join("") + endHtml;
 
-        context.app.showGenericModalDialog('Results', { html });
+        context.app.showGenericModalDialog("Results", { html });
       } catch (err) {
-        context.app.alert('Unknown Error Occurred', err.message);
+        context.app.alert("Unknown Error Occurred", err.message);
         console.log(err);
       }
     }

@@ -1,11 +1,32 @@
 {
   "name": "insomnia-plugin-load-test-timing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "load-test-timing.js",
   "insomnia": {
     "name": "load-test-timing",
     "description": "Runs requests, given number of times and produces timing results"
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "description": "This plugin adds an option to each folder's drop-down menu that allows you to run all the requests in the folder and gather timing information.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shindig/insomnia-plugin-load-test-timing.git"
+  },
+  "keywords": [
+    "insomnia",
+    "plugin",
+    "load",
+    "testing",
+    "timing"
+  ],
+  "author": "Mark C Bradley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shindig/insomnia-plugin-load-test-timing/issues"
+  },
+  "homepage": "https://github.com/shindig/insomnia-plugin-load-test-timing#readme"
 }
