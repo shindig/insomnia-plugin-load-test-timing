@@ -1,5 +1,7 @@
 # insomnia-plugin-load-test-timing
 
+[![npm version](https://badge.fury.io/js/insomnia-plugin-load-test-timing.svg)](https://badge.fury.io/js/insomnia-plugin-load-test-timing)
+
 This plugin adds an option to each folder's drop-down menu that allows you to run all the requests in the folder and gather timing information.
 
 ## Input Dialogs
