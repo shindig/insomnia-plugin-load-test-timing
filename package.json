@@ -28,5 +28,10 @@
   "bugs": {
     "url": "https://github.com/shindig/insomnia-plugin-load-test-timing/issues"
   },
-  "homepage": "https://github.com/shindig/insomnia-plugin-load-test-timing#readme"
+  "homepage": "https://github.com/shindig/insomnia-plugin-load-test-timing#readme",
+  "prettier": {
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": true
+  }
 }
