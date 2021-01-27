@@ -7,7 +7,7 @@ td { border: 1px solid #CCC; padding: 5px 5px 5px 10px; }
 footer { padding-top: 20px; text-align: center; }`;
 
 const startHtml = `
-<html>
+<html lang="en">
  <head>
   <style>${css}</style>
  </head>
