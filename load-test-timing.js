@@ -149,7 +149,7 @@ const action = async (context, data) => {
       const result = results[i];
       const avg = result.total / result.successes;
 
-      let color = "";
+      let color;
 
       if (result.successes === numIterations) {
         color = "limegreen";
