@@ -44,8 +44,8 @@ module.exports.requestGroupActions = [
             label: "# Iterations",
             defaultValue: "10",
             cancelable: true,
-            submitName: "Next"
-          }
+            submitName: "Next",
+          },
         );
 
         numIterations = parseInt(numIterationsPrompt);
@@ -56,8 +56,8 @@ module.exports.requestGroupActions = [
             label: "# Seconds",
             defaultValue: "1",
             cancelable: true,
-            submitName: "Next"
-          }
+            submitName: "Next",
+          },
         );
 
         delayBetweenRequests = parseInt(delayBetweenRequestsPrompt);
@@ -66,7 +66,7 @@ module.exports.requestGroupActions = [
           await context.app.prompt("Run all requests in parallel? (3/3)", {
             label: "Run in parallel (Y/N)",
             defaultValue: "N",
-            cancelable: true
+            cancelable: true,
           })
         )
           .toLowerCase()
@@ -95,10 +95,10 @@ module.exports.requestGroupActions = [
 
       try {
         const { requests } = data;
-        const results = requests.map(_ => {
+        const results = requests.map((_) => {
           return {
             successes: 0,
-            total: 0
+            total: 0,
           };
         });
 
@@ -112,13 +112,13 @@ module.exports.requestGroupActions = [
           });
         };
 
-        const sendRequests = reqs => {
-          return Promise.all(reqs.map(r => context.network.sendRequest(r)));
+        const sendRequests = (reqs) => {
+          return Promise.all(reqs.map((r) => context.network.sendRequest(r)));
         };
 
         const execute = () => {
-          return new Promise(resolve => {
-            const runIt = async currentIteration => {
+          return new Promise((resolve) => {
+            const runIt = async (currentIteration) => {
               console.log("Run # " + (currentIteration + 1));
 
               if (runInParallel) {
@@ -165,7 +165,7 @@ module.exports.requestGroupActions = [
               <td><font color="${color}">${numIterations}</font></td>
               <td>${avg.toFixed(1)}</td>
               <td>${result.total.toFixed(2)}</td>
-            </tr>`
+            </tr>`,
           );
         });
 
@@ -177,6 +177,6 @@ module.exports.requestGroupActions = [
         context.app.alert("Unknown Error Occurred", err.message);
         console.log(err);
       }
-    }
-  }
+    },
+  },
 ];
