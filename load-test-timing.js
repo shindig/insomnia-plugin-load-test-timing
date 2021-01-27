@@ -181,3 +181,10 @@ module.exports.requestGroupActions = [
     action,
   },
 ];
+
+module.exports.workspaceActions = [
+  {
+    label: "Load Test",
+    action,
+  },
+];
