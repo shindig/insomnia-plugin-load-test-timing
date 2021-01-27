@@ -160,7 +160,7 @@ const action = async (context, data) => {
       rows.push(
         `<tr>
               <td>${request.name || request.url}</td>
-              <td><font color="${color}">${numIterations}</font></td>
+              <td><span style="color: ${color}">${numIterations}</span></td>
               <td>${avg.toFixed(1)}</td>
               <td>${result.total.toFixed(2)}</td>
             </tr>`,
