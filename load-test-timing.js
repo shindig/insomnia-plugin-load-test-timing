@@ -9,6 +9,7 @@ footer { padding-top: 20px; text-align: center; }`;
 const startHtml = `
 <html lang="en">
  <head>
+  <title>Load Test</title>
   <style>${css}</style>
  </head>
  <body>`;
