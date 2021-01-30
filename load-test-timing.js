@@ -1,5 +1,7 @@
-const { remote: { BrowserWindow, getCurrentWindow } } = require('electron');
-const ProgressBar = require('electron-progressbar');
+const {
+  remote: { BrowserWindow, getCurrentWindow },
+} = require("electron");
+const ProgressBar = require("electron-progressbar");
 
 const css = `
 header { padding-bottom: 20px; text-align: center; }
@@ -36,33 +38,34 @@ const endHtml = `
  </body>
 </html>`;
 
-const createProgressBar = (maxValue) => new ProgressBar({
-  text: 'Preparing data...',
-  detail: 'Please Wait...',
-  indeterminate: false,
-  maxValue,
-  remoteWindow: BrowserWindow,
-  browserWindow: {
-    parent: getCurrentWindow(),
-    modal: true,
-    //frame: false,
-    closable: true,
+const createProgressBar = (maxValue) =>
+  new ProgressBar({
+    text: "Preparing data...",
+    detail: "Please Wait...",
     indeterminate: false,
-  }
-});
+    maxValue,
+    remoteWindow: BrowserWindow,
+    browserWindow: {
+      parent: getCurrentWindow(),
+      modal: true,
+      //frame: false,
+      closable: true,
+      indeterminate: false,
+    },
+  });
 
-const createResultWindow = () => new BrowserWindow({
-  //parent: getCurrentWindow(),
-  //modal: true,
-  //frame: false,
-  //closable: true,
-  autoHideMenuBar: true,
-  //titleBarStyle: "hidden",
-  show: false
-});
+const createResultWindow = () =>
+  new BrowserWindow({
+    //parent: getCurrentWindow(),
+    //modal: true,
+    //frame: false,
+    //closable: true,
+    autoHideMenuBar: true,
+    //titleBarStyle: "hidden",
+    show: false,
+  });
 
 const action = async (context, data) => {
-
   const { requests } = data;
   let progress = null;
   let abortRequests = false;
@@ -140,7 +143,7 @@ const action = async (context, data) => {
         if (response.statusCode.toString().startsWith("2")) {
           result.successes++;
           result.total += response.elapsedTime;
-        }else {
+        } else {
           result.fails++;
         }
       });
@@ -152,14 +155,14 @@ const action = async (context, data) => {
 
     const execute = () => {
       progress = createProgressBar(requests.length * numIterations);
-      progress.on('aborted', function() {
+      progress.on("aborted", function () {
         console.info(`aborted...`);
         abortRequests = true;
       });
       return new Promise((resolve, reject) => {
         const runIt = async (currentIteration) => {
           if (abortRequests) {
-            return reject({message:'Aborted by user'});
+            return reject({ message: "Aborted by user" });
           }
           console.log("Run # " + (currentIteration + 1));
 
@@ -168,7 +171,7 @@ const action = async (context, data) => {
           } else {
             for (let j = 0; j < requests.length; j++) {
               if (abortRequests) {
-                return reject({message:'Aborted by user'});
+                return reject({ message: "Aborted by user" });
               }
               recorder(await sendRequests([requests[j]]), j);
             }
@@ -216,11 +219,10 @@ const action = async (context, data) => {
     });
 
     const html = startHtml + header + startTableHtml + rows.join("") + endHtml;
-    const content = 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
+    const content = "data:text/html;charset=UTF-8," + encodeURIComponent(html);
     const resultWindow = createResultWindow();
-    resultWindow.loadURL(content)
+    resultWindow.loadURL(content);
     resultWindow.show();
-
   } catch (err) {
     context.app.alert("Unknown Error Occurred", err.message);
     console.log(err);
