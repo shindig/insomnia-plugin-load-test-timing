@@ -1,3 +1,6 @@
+const { remote: { BrowserWindow, getCurrentWindow } } = require('electron');
+const ProgressBar = require('electron-progressbar');
+
 const css = `
 header { padding-bottom: 20px; text-align: center; }
 header b { padding-left: 10px; }
@@ -32,7 +35,24 @@ const endHtml = `
  </body>
 </html>`;
 
+const progressBar = (maxValue) => new ProgressBar({
+  text: 'Preparing data...',
+  detail: 'Please Wait...',
+  indeterminate: false,
+  maxValue,
+  remoteWindow: BrowserWindow,
+  browserWindow: {
+    parent: getCurrentWindow(),
+    modal: true,
+    //frame: false,
+    closable: true,
+    indeterminate: false,
+  }
+});
+
 const action = async (context, data) => {
+
+  let progress = null;
   let numIterations, delayBetweenRequests, runInParallel;
 
   try {
@@ -102,6 +122,7 @@ const action = async (context, data) => {
 
     const recorder = (responses, j) => {
       responses.forEach((response, i) => {
+        progress.value += 1;
         if (response.statusCode.toString().startsWith("2")) {
           const result = results[j || i];
           result.successes++;
@@ -115,6 +136,7 @@ const action = async (context, data) => {
     };
 
     const execute = () => {
+      progress = progressBar(requests.length * numIterations);
       return new Promise((resolve) => {
         const runIt = async (currentIteration) => {
           console.log("Run # " + (currentIteration + 1));
