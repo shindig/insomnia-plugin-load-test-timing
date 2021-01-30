@@ -22,6 +22,7 @@ const startTableHtml = `
    <tr>
     <th>Request</th>
     <th># Successes</th>
+    <th># Fails</th>
     <th>Avg. Time (ms)</th>
     <th>Total Time (ms)</th>
    </tr>
@@ -52,6 +53,7 @@ const progressBar = (maxValue) => new ProgressBar({
 
 const action = async (context, data) => {
 
+  const { requests } = data;
   let progress = null;
   let numIterations, delayBetweenRequests, runInParallel;
 
@@ -112,10 +114,10 @@ const action = async (context, data) => {
       </header>`;
 
   try {
-    const { requests } = data;
     const results = requests.map((_) => {
       return {
         successes: 0,
+        fails: 0,
         total: 0,
       };
     });
@@ -123,10 +125,12 @@ const action = async (context, data) => {
     const recorder = (responses, j) => {
       responses.forEach((response, i) => {
         progress.value += 1;
+        const result = results[j || i];
         if (response.statusCode.toString().startsWith("2")) {
-          const result = results[j || i];
           result.successes++;
           result.total += response.elapsedTime;
+        }else {
+          result.fails++;
         }
       });
     };
@@ -182,7 +186,8 @@ const action = async (context, data) => {
       rows.push(
         `<tr>
               <td>${request.name || request.url}</td>
-              <td><span style="color: ${color}">${numIterations}</span></td>
+              <td><span style="color: ${color}">${result.successes}</span></td>
+              <td><span style="color: ${color}">${result.fails}</span></td>
               <td>${avg.toFixed(1)}</td>
               <td>${result.total.toFixed(2)}</td>
             </tr>`,
