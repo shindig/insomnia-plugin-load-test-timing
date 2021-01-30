@@ -36,7 +36,7 @@ const endHtml = `
  </body>
 </html>`;
 
-const progressBar = (maxValue) => new ProgressBar({
+const createProgressBar = (maxValue) => new ProgressBar({
   text: 'Preparing data...',
   detail: 'Please Wait...',
   indeterminate: false,
@@ -140,7 +140,7 @@ const action = async (context, data) => {
     };
 
     const execute = () => {
-      progress = progressBar(requests.length * numIterations);
+      progress = createProgressBar(requests.length * numIterations);
       return new Promise((resolve) => {
         const runIt = async (currentIteration) => {
           console.log("Run # " + (currentIteration + 1));
