@@ -51,6 +51,16 @@ const createProgressBar = (maxValue) => new ProgressBar({
   }
 });
 
+const createResultWindow = () => new BrowserWindow({
+  //parent: getCurrentWindow(),
+  //modal: true,
+  //frame: false,
+  //closable: true,
+  autoHideMenuBar: true,
+  //titleBarStyle: "hidden",
+  show: false
+});
+
 const action = async (context, data) => {
 
   const { requests } = data;
@@ -195,8 +205,11 @@ const action = async (context, data) => {
     });
 
     const html = startHtml + header + startTableHtml + rows.join("") + endHtml;
+    const content = 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
+    const resultWindow = createResultWindow();
+    resultWindow.loadURL(content)
+    resultWindow.show();
 
-    context.app.showGenericModalDialog("Results", { html });
   } catch (err) {
     context.app.alert("Unknown Error Occurred", err.message);
     console.log(err);
