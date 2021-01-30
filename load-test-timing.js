@@ -65,6 +65,7 @@ const action = async (context, data) => {
 
   const { requests } = data;
   let progress = null;
+  let abortRequests = false;
   let numIterations, delayBetweenRequests, runInParallel;
 
   try {
@@ -151,14 +152,24 @@ const action = async (context, data) => {
 
     const execute = () => {
       progress = createProgressBar(requests.length * numIterations);
-      return new Promise((resolve) => {
+      progress.on('aborted', function() {
+        console.info(`aborted...`);
+        abortRequests = true;
+      });
+      return new Promise((resolve, reject) => {
         const runIt = async (currentIteration) => {
+          if (abortRequests) {
+            return reject({message:'Aborted by user'});
+          }
           console.log("Run # " + (currentIteration + 1));
 
           if (runInParallel) {
             recorder(await sendRequests(requests));
           } else {
             for (let j = 0; j < requests.length; j++) {
+              if (abortRequests) {
+                return reject({message:'Aborted by user'});
+              }
               recorder(await sendRequests([requests[j]]), j);
             }
           }
