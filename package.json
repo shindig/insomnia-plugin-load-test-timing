@@ -7,9 +7,8 @@
     "description": "Runs requests, given number of times and produces timing results"
   },
   "dependencies": {
-    "electron-progressbar": "^2.0.0"
+    "electron-progressbar": "2.0.0"
   },
-  "devDependencies": {},
   "description": "This plugin adds an option to each folder's drop-down menu that allows you to run all the requests in the folder and gather timing information.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
