@@ -6,8 +6,9 @@
     "name": "load-test-timing",
     "description": "Runs requests, given number of times and produces timing results"
   },
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "electron-progressbar": "2.0.0"
+  },
   "description": "This plugin adds an option to each folder's drop-down menu that allows you to run all the requests in the folder and gather timing information.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,5 +29,10 @@
   "bugs": {
     "url": "https://github.com/shindig/insomnia-plugin-load-test-timing/issues"
   },
-  "homepage": "https://github.com/shindig/insomnia-plugin-load-test-timing#readme"
+  "homepage": "https://github.com/shindig/insomnia-plugin-load-test-timing#readme",
+  "prettier": {
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": true
+  }
 }
