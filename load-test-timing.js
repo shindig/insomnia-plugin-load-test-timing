@@ -48,7 +48,6 @@ const createProgressBar = (maxValue) =>
     browserWindow: {
       parent: getCurrentWindow(),
       modal: true,
-      //frame: false,
       closable: true,
       indeterminate: false,
     },
@@ -56,12 +55,7 @@ const createProgressBar = (maxValue) =>
 
 const createResultWindow = () =>
   new BrowserWindow({
-    //parent: getCurrentWindow(),
-    //modal: true,
-    //frame: false,
-    //closable: true,
     autoHideMenuBar: true,
-    //titleBarStyle: "hidden",
     show: false,
   });
 
