@@ -79,9 +79,9 @@ const action = async (context, data) => {
     numIterations = parseInt(numIterationsPrompt);
 
     const delayBetweenRequestsPrompt = await context.app.prompt(
-      "Second delay between requests? (2/3)",
+      "Millisecond delay between requests? (2/3)",
       {
-        label: "# Seconds",
+        label: "# Milliseconds (1000 milliseconds = 1 second)",
         defaultValue: "1",
         cancelable: true,
         submitName: "Next",
