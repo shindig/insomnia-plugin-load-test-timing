@@ -173,7 +173,7 @@ const action = async (context, data) => {
 
           if (currentIteration < numIterations - 1) {
             setTimeout(async () => {
-              await runIt(currentIteration + 1);
+              runIt(currentIteration + 1);
             }, delayBetweenRequests);
           } else {
             return resolve();
