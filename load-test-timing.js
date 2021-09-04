@@ -158,7 +158,13 @@ const action = async (context, data) => {
           if (abortRequests) {
             return reject({ message: "Aborted by user" });
           }
+
           console.log("Run # " + (currentIteration + 1));
+
+          if (delayBetweenRequests > 0 && currentIteration == 0) {
+            console.log('Waiting for the first delay...')
+            await new Promise(r => setTimeout(r, delayBetweenRequests));
+          }
 
           if (runInParallel) {
             recorder(await sendRequests(requests));
