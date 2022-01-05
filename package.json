@@ -1,6 +1,6 @@
 {
   "name": "insomnia-plugin-load-test-timing",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "main": "load-test-timing.js",
   "insomnia": {
     "name": "load-test-timing",

@@ -79,9 +79,9 @@ const action = async (context, data) => {
     numIterations = parseInt(numIterationsPrompt);
 
     const delayBetweenRequestsPrompt = await context.app.prompt(
-      "Second delay between requests? (2/3)",
+      "Millisecond delay between requests? (2/3)",
       {
-        label: "# Seconds",
+        label: "# Milliseconds (1000 milliseconds = 1 second)",
         defaultValue: "1",
         cancelable: true,
         submitName: "Next",
@@ -158,7 +158,13 @@ const action = async (context, data) => {
           if (abortRequests) {
             return reject({ message: "Aborted by user" });
           }
+
           console.log("Run # " + (currentIteration + 1));
+
+          if (delayBetweenRequests > 0 && currentIteration == 0) {
+            console.log('Waiting for the first delay...')
+            await new Promise(r => setTimeout(r, delayBetweenRequests));
+          }
 
           if (runInParallel) {
             recorder(await sendRequests(requests));
@@ -173,7 +179,7 @@ const action = async (context, data) => {
 
           if (currentIteration < numIterations - 1) {
             setTimeout(async () => {
-              await runIt(currentIteration + 1);
+              runIt(currentIteration + 1);
             }, delayBetweenRequests);
           } else {
             return resolve();
