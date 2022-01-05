@@ -47,7 +47,7 @@ const createProgressBar = (maxValue) =>
     remoteWindow: BrowserWindow,
     browserWindow: {
       parent: getCurrentWindow(),
-      modal: true,
+      modal: false,
       closable: true,
       indeterminate: false,
     },
@@ -162,8 +162,8 @@ const action = async (context, data) => {
           console.log("Run # " + (currentIteration + 1));
 
           if (delayBetweenRequests > 0 && currentIteration == 0) {
-            console.log('Waiting for the first delay...')
-            await new Promise(r => setTimeout(r, delayBetweenRequests));
+            console.log("Waiting for the first delay...");
+            await new Promise((r) => setTimeout(r, delayBetweenRequests));
           }
 
           if (runInParallel) {
@@ -224,8 +224,10 @@ const action = async (context, data) => {
     resultWindow.loadURL(content);
     resultWindow.show();
   } catch (err) {
-    context.app.alert("Unknown Error Occurred", err.message);
-    console.log(err);
+    if (!abortRequests) {
+      context.app.alert("Unknown Error Occurred", err.message);
+      console.log(err);
+    }
   }
 };
 
