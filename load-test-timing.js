@@ -1,8 +1,3 @@
-const {
-  remote: { BrowserWindow, getCurrentWindow },
-} = require("electron");
-const ProgressBar = require("electron-progressbar");
-
 const css = `
 header { padding-bottom: 20px; text-align: center; }
 header b { padding-left: 10px; }
@@ -38,30 +33,9 @@ const endHtml = `
  </body>
 </html>`;
 
-const createProgressBar = (maxValue) =>
-  new ProgressBar({
-    text: "Preparing data...",
-    detail: "Please Wait...",
-    indeterminate: false,
-    maxValue,
-    remoteWindow: BrowserWindow,
-    browserWindow: {
-      parent: getCurrentWindow(),
-      modal: false,
-      closable: true,
-      indeterminate: false,
-    },
-  });
-
-const createResultWindow = () =>
-  new BrowserWindow({
-    autoHideMenuBar: true,
-    show: false,
-  });
-
 const action = async (context, data) => {
   const { requests } = data;
-  let progress = null;
+  const progressModal = document.createElement('div');
   let abortRequests = false;
   let numIterations, delayBetweenRequests, runInParallel;
 
@@ -117,7 +91,7 @@ const action = async (context, data) => {
 
   const header = `
       <header>
-        <b># Iterations:</b> [${numIterations}] <b>Delay between requests:</b> [${delayBetweenRequests}s] <b>Run:</b> 
+        <b># Iterations:</b> [${numIterations}] <b>Delay between requests:</b> [${delayBetweenRequests}ms] <b>Run:</b> 
         [${runInParallel ? "in Parallel" : "Serially"}]
       </header>`;
 
@@ -132,7 +106,6 @@ const action = async (context, data) => {
 
     const recorder = (responses, j) => {
       responses.forEach((response, i) => {
-        progress.value += 1;
         const result = results[j || i];
         if (response.statusCode.toString().startsWith("2")) {
           result.successes++;
@@ -148,10 +121,16 @@ const action = async (context, data) => {
     };
 
     const execute = () => {
-      progress = createProgressBar(requests.length * numIterations);
-      progress.on("aborted", function () {
-        console.info(`aborted...`);
-        abortRequests = true;
+      progressModal.style.padding = '20px';
+      progressModal.innerHTML = `
+      <h4><font color=red><strong>If you close this, requests will be aborted</strong></font></h4>
+      <p>Please wait until all requests finishes. Due to the limitations of the Insomnia Plugins we can not show you a progress bar 
+      but you can always open the DevTools and see the console.</p>`;
+      context.app.dialog("Processing", progressModal, {
+        onHide: () => {
+          console.info(`aborted...`);
+          abortRequests = true;
+        }
       });
       return new Promise((resolve, reject) => {
         const runIt = async (currentIteration) => {
@@ -219,10 +198,11 @@ const action = async (context, data) => {
     });
 
     const html = startHtml + header + startTableHtml + rows.join("") + endHtml;
-    const content = "data:text/html;charset=UTF-8," + encodeURIComponent(html);
-    const resultWindow = createResultWindow();
-    resultWindow.loadURL(content);
-    resultWindow.show();
+    progressModal.innerHTML = html;
+    context.app.dialog("Results Table", progressModal, {
+      tall: true,
+    });
+
   } catch (err) {
     if (!abortRequests) {
       context.app.alert("Unknown Error Occurred", err.message);
