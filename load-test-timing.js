@@ -117,7 +117,7 @@ const action = async (context, data) => {
 
   const header = `
       <header>
-        <b># Iterations:</b> [${numIterations}] <b>Delay between requests:</b> [${delayBetweenRequests}s] <b>Run:</b> 
+        <b># Iterations:</b> [${numIterations}] <b>Delay between requests:</b> [${delayBetweenRequests}ms] <b>Run:</b> 
         [${runInParallel ? "in Parallel" : "Serially"}]
       </header>`;
 
