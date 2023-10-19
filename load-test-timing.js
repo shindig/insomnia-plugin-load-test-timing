@@ -34,10 +34,6 @@ const endHtml = `
 </html>`;
 
 const action = async (context, requests) => {
-  // console.log({data});
-  // console.log({context});
-  // const { requests } = data;
-  console.log({ requests });
   const progressModal = document.createElement('div');
   let abortRequests = false;
   let numIterations, delayBetweenRequests, runInParallel;
