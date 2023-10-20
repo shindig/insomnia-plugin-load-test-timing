@@ -33,8 +33,7 @@ const endHtml = `
  </body>
 </html>`;
 
-const action = async (context, data) => {
-  const { requests } = data;
+const action = async (context, requests) => {
   const progressModal = document.createElement('div');
   let abortRequests = false;
   let numIterations, delayBetweenRequests, runInParallel;
@@ -211,16 +210,32 @@ const action = async (context, data) => {
   }
 };
 
+module.exports.requestActions = [
+  {
+    label: "Load Test",
+    action: async (context, data) => {
+      const { request } = data;
+      action(context, [request]);
+    },
+  },
+]
+
 module.exports.requestGroupActions = [
   {
     label: "Load Test",
-    action,
+    action: async (context, data) => {
+      const { requests } = data;
+      action(context, requests);
+    },
   },
 ];
 
 module.exports.workspaceActions = [
   {
     label: "Load Test",
-    action,
+    action: async (context, data) => {
+      const { requests } = data;
+      action(context, requests);
+    },
   },
 ];
