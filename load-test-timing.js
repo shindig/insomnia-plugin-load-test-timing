@@ -1,9 +1,13 @@
 const css = `
 header { padding-bottom: 20px; text-align: center; }
 header b { padding-left: 10px; }
-table { margin: 0 auto 0 auto; }
-th { text-align: left; padding: 10px !important; font-size: 14px !important; border: 1px solid #CCC; }
+table { margin-top: 5px; margin-bottom: 20px; width: 100%; }
+th { text-align: left; white-space: nowrap; padding: 10px !important; font-size: 14px !important; border: 1px solid #CCC; }
 td { border: 1px solid #CCC; padding: 5px 5px 5px 10px; }
+td.shrink {
+  white-space: nowrap;
+  width: 1px;
+}
 footer { padding-top: 20px; text-align: center; }`;
 
 const startHtml = `
@@ -14,7 +18,11 @@ const startHtml = `
  </head>
  <body>`;
 
-const startTableHtml = `
+const titleSummaryTableHTML = `
+  <div>SUMMARY</div>
+`;
+
+const startSummaryTableHtml = `
   <table>
    <tr>
     <th>Request</th>
@@ -22,11 +30,27 @@ const startTableHtml = `
     <th># Fails</th>
     <th>Avg. Time (ms)</th>
     <th>Total Time (ms)</th>
-   </tr>
+   </tr>`;
+
+const titleDetailsTableHTML = `
+<div>DETAILS</div>
 `;
 
-const endHtml = `
-  </table>
+const startDetailsTableHtml = `
+<div>DETAILS
+  <table>
+   <tr>
+    <th style="text-align: center">#</th>
+    <th style="text-align: center">Request</th>
+    <th style="text-align: center">Response</th>
+    <th style="text-align: center">Time (ms)</th>
+   </tr>
+</div>`;
+
+const endTable = `
+  </table>`;
+
+const footer = `
   <footer>
     Times are more accurate with more iterations (initial first request is delayed)
   </footer>
@@ -90,8 +114,8 @@ const action = async (context, requests) => {
 
   const header = `
       <header>
-        <b># Iterations:</b> [${numIterations}] <b>Delay between requests:</b> [${delayBetweenRequests}ms] <b>Run:</b> 
-        [${runInParallel ? "in Parallel" : "Serially"}]
+        <b># Iterations:</b> ${numIterations} <b>Delay between requests:</b> ${delayBetweenRequests}ms <b>Run:</b> 
+        ${runInParallel ? "in Parallel" : "Serially"}
       </header>`;
 
   try {
@@ -103,9 +127,32 @@ const action = async (context, requests) => {
       };
     });
 
+    const detailedResults = []
+    let iteration = 0
     const recorder = (responses, j) => {
       responses.forEach((response, i) => {
         const result = results[j || i];
+        const detailedResult = {}
+
+        if (runInParallel) {
+          if (i % requests.length == 0) {
+            iteration++
+          }
+        } else {
+          if (j == 0) {
+            iteration++
+          }
+        }
+
+        detailedResult.iteration = iteration
+        detailedResult.statusCode = response.statusCode.toString()
+        detailedResult.status = response.statusMessage
+        detailedResult.elapsedTime = response.elapsedTime
+        detailedResult.url = response.url.toString()
+        detailedResult.name = requests[j || i].name.toString()
+
+        detailedResults.push(detailedResult)
+
         if (response.statusCode.toString().startsWith("2")) {
           result.successes++;
           result.total += response.elapsedTime;
@@ -168,9 +215,12 @@ const action = async (context, requests) => {
       });
     };
 
+    const startTime = performance.now();
     await execute();
+    const endTime = performance.now();
+    const totalTimeElapsed = endTime - startTime
 
-    const rows = [];
+    const summaryRows = [];
 
     results.forEach((r, i) => {
       const request = requests[i];
@@ -185,20 +235,75 @@ const action = async (context, requests) => {
         color = "red";
       }
 
-      rows.push(
+      summaryRows.push(
         `<tr>
-              <td>${request.name || request.url}</td>
-              <td><span style="color: ${color}">${result.successes}</span></td>
-              <td><span style="color: ${color}">${result.fails}</span></td>
-              <td>${avg.toFixed(1)}</td>
-              <td>${result.total.toFixed(2)}</td>
-            </tr>`,
+          <td>${request.name || request.url}</td>
+          <td align="center"><span style="color: ${color}">${result.successes}</span></td>
+          <td align="center"><span style="color: ${color}">${result.fails}</span></td>
+          <td align="center">${avg.toFixed(1)}</td>
+          <td align="center">${result.total.toFixed(1)}</td>
+        </tr>`,
       );
     });
 
-    const html = startHtml + header + startTableHtml + rows.join("") + endHtml;
+    const timeElapsedTable =
+      `<table>
+        <tr>
+          <td >Total load test duration</td>
+          <td align="center" style="min-width: 70px" class="shrink"><span >${totalTimeElapsed.toFixed(2)} ms</span></td>
+        </tr>
+      </table>`
+      ;
+
+    const detailedRows = [];
+    let tableIteration = 0;
+
+    detailedResults.forEach((result, i) => {
+
+      let color;
+
+      const responseType = result.statusCode.charAt(0)
+
+      switch (responseType) {
+        case "2":
+          color = "limegreen";
+          break;
+        case "3":
+        case "4":
+          color = "orange";
+          break;
+        case "5":
+          color = "red";
+          break;
+      }
+
+      if (tableIteration < result.iteration) {
+        tableIteration = result.iteration;
+
+        if (tableIteration > 1) {
+          detailedRows.push(`
+          </table>`,
+          );
+        }
+        detailedRows.push(`
+          <span style="color: grey">Iteration ${tableIteration.toString()}</span>
+        <table>`,
+        );
+      };
+
+      detailedRows.push(
+        `<tr>
+          <td align="center" style="min-width: 30px" class="shrink" >${i + 1}</td>
+          <td align="center" >${result.name || result.url}</td>
+          <td align="center" style="width: 250px" ><span style="color: ${color}">${result.statusCode} ${result.status}</span></td>
+          <td align="right" style="min-width: 70px" class="shrink" >${result.elapsedTime.toFixed(1)} ms</td>
+        </tr>`,
+      );
+    });
+
+    const html = startHtml + header + titleSummaryTableHTML + startSummaryTableHtml + summaryRows.join("") + endTable + timeElapsedTable + titleDetailsTableHTML + detailedRows.join("") + endTable + footer;
     progressModal.innerHTML = html;
-    context.app.dialog("Results Table", progressModal, {
+    context.app.dialog("Results", progressModal, {
       tall: true,
     });
 
